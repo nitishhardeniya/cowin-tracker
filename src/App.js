@@ -39,7 +39,7 @@ export default function App() {
               const addCenter = [...centerDetails];
               addCenter.push(center);
               setCenterDetails(addCenter);
-              alert("New slots available");
+              alert("Hurry! Slots available");
             }
             return session.min_age_limit === 18;
           });
