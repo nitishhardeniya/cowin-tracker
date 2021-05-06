@@ -59,7 +59,7 @@ export default function App() {
               const addCenter = [...centerDetails];
               addCenter.push(center);
               setCenterDetails(addCenter);
-              bookSlot(ct.center_id,session.session_id)
+              //bookSlot(ct.center_id,session.session_id)
               console.log(`Center id: ${ct.center_id} Session id: ${session.session_id}`);
               alert("Hurry! Slots available", addCenter);
             }
