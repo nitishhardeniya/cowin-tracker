@@ -1,7 +1,7 @@
 .App {
   font-family: sans-serif;
   text-align: center;
-  width: 75vw;
+  width: 85vw;
 }
 
 .fl {
@@ -20,6 +20,8 @@
 .name {
   color: grey;
   padding: 10px;
+  text-align: left;
+  font-size: 12px;
 }
 .pin {
   color: blue;
@@ -28,4 +30,10 @@
 .green {
   color: green;
   font-size: 24px;
+}
+
+.blue {
+  color: blue;
+  padding: 10px;
+  background-color: lightblue;
 }

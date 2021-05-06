@@ -1,15 +1,11 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 
-const getCenters = fetch(
+const getCenters = () => fetch(
   "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=294&date=06-05-2021"
 )
   .then((data) => data.json())
   .then((data) => data);
-
-setInterval(() => {
-  window.location.reload();
-}, 30000);
 
 const bookSlot = (centerId, sessionId) => fetch("https://cdn-api.co-vin.in/api/v2/appointment/schedule", {
   "headers": {
@@ -32,52 +28,61 @@ const bookSlot = (centerId, sessionId) => fetch("https://cdn-api.co-vin.in/api/v
 });
 
 export default function App() {
+  const [retryMsg, setRetryMessage] = useState('');
   const [centers, setCenters] = useState([]);
   const [available, setAvailability] = useState(0);
   const [centerDetails, setCenterDetails] = useState([]);
 
-  useEffect(() => {
-    const allCenters = getCenters;
-    allCenters.then((data) => {
-      //console.log(data);
-      const ct18p = [];
-      data.centers.forEach((ct) => {
-        const isTargetCenter =
-          ct.sessions?.length > 0 &&
-          ct.sessions.filter((session) => {
-            if (
-              session.min_age_limit === 18 &&
-              session.available_capacity > 0
-            ) {
-              setAvailability(session.available_capacity);
-              const center = {
-                name: ct.name,
-                pin: ct.pincode,
-                date: session.date,
-                available: session.available_capacity
-              };
-              const addCenter = [...centerDetails];
-              addCenter.push(center);
-              setCenterDetails(addCenter);
-              //bookSlot(ct.center_id,session.session_id)
-              console.log(`Center id: ${ct.center_id} Session id: ${session.session_id}`);
-              alert("Hurry! Slots available", addCenter);
-            }
-            return session.min_age_limit === 18;
-          });
-        if (isTargetCenter.length > 0) {
-          ct18p.push(ct);
-        }
-      });
-      console.log(ct18p);
-      return setCenters(ct18p);
+  const callCowin = () => getCenters().then(data => {
+    setTimeout(() => setRetryMessage(''), 2000)
+    const ct18p = [];
+    data && data.centers.forEach((ct) => {
+      const isTargetCenter =
+        ct.sessions?.length > 0 &&
+        ct.sessions.filter((session) => {
+          if (
+            session.min_age_limit === 18 &&
+            session.available_capacity > 0
+          ) {
+            setAvailability(session.available_capacity);
+            const center = {
+              name: ct.name,
+              pin: ct.pincode,
+              date: session.date,
+              available: session.available_capacity
+            };
+            const addCenter = [...centerDetails];
+            addCenter.push(center);
+            setCenterDetails(addCenter);
+            //bookSlot(ct.center_id,session.session_id)
+            console.log(`Center id: ${ct.center_id} Session id: ${session.session_id}`);
+            alert("Hurry! Slots available", addCenter);
+          }
+          return session.min_age_limit === 18;
+        });
+      if (isTargetCenter.length > 0) {
+        ct18p.push(ct);
+      }
     });
+    //console.log(ct18p);
+    setCenters(ct18p);
+  });
+
+
+  useEffect(() => {
+    callCowin();
+    setInterval(() => {
+      //console.log("called")
+      setRetryMessage('Checking for slots (20s)...');
+      callCowin();
+    }, 20000);
   }, []);
 
   return (
     <div className="fl center">
       <div className="App">
       <h1>CoWin 18+ Tracker</h1>
+      {retryMsg && <h3 className="blue">{retryMsg}</h3>}
       {centers &&
         centers.length > 0 &&
         centers.map((el) => (
@@ -86,16 +91,32 @@ export default function App() {
             <div className="pin">{el.pincode}</div>
           </div>
         ))}
-      <div className="green">Available slots: {available}</div>
+      {available > 0 && <div className="green">Available slots: {available}</div>}
+      <br />
       {centerDetails &&
         centerDetails.length > 0 &&
         centerDetails.map((elm) => (
-          <div className="center-container">
-            Center Name: {elm.name || "NA"} <br />
-            Pin: {elm.pin || "NA"}
-            Date: {elm.date || "NA"}
-            Available: {elm.available || 0}
-          </div>
+          <>
+            <div className="center-container">
+              <label>Center Name:</label>
+              <div>{elm.name || "NA"} </div>
+            </div>
+
+            <div className="center-container">
+              <label>Pin:</label>
+              <div>{elm.pin || "NA"} </div>
+            </div>
+
+            <div className="center-container">
+              <label>Date:</label>
+              <div>{elm.date || "NA"} </div>
+            </div>
+
+            <div className="center-container">
+              <label>Available:</label>
+              <div>{elm.available || "NA"} </div>
+            </div>
+          </>
         ))}
     </div>
     </div>
