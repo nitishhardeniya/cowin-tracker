@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./App.css";
 
 const getCenters = () => fetch(
-  "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=294&date=06-05-2021"
+  "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=294&date=07-05-2021"
 )
   .then((data) => data.json())
   .then((data) => data);
