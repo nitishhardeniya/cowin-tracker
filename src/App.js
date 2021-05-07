@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 
-const getCenters = () => fetch(
-  "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=294&date=07-05-2021"
+const getCenters = (date) => fetch(
+  "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=294&date="+date
 )
   .then((data) => data.json())
   .then((data) => data);
@@ -33,7 +33,9 @@ export default function App() {
   const [available, setAvailability] = useState(0);
   const [centerDetails, setCenterDetails] = useState([]);
 
-  const callCowin = () => getCenters().then(data => {
+  const today = (new Date()).toLocaleDateString().split("/").join("-");
+  //console.log(today)
+  const callCowin = () => getCenters(today).then(data => {
     setTimeout(() => setRetryMessage(''), 2000)
     const ct18p = [];
     data && data.centers.forEach((ct) => {
