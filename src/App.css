@@ -6,6 +6,7 @@
 
 .fl {
   display: flex;
+  flex-wrap: wrap;
 }
 
 .center {
