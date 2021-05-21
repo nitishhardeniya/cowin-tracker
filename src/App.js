@@ -9,9 +9,9 @@ export default function App() {
   //B urban - 265
   return (<div className="fl center">
     <h1>CoWin 18+ Tracker</h1>
+    <Dashboard districtId="294" title="BBMP" />
     <Dashboard districtId="265" title="B Urban" />
     <Dashboard districtId="276" title="B Rural" />
-    <Dashboard districtId="294" title="BBMP" />
     </div>
   );
 }
