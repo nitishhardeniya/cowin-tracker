@@ -46,20 +46,20 @@ const Dashboard = ({ districtId, title }) => {
         ct.sessions.filter((session) => {
           if (
             session.min_age_limit === 18 &&
-            session.available_capacity > 0
+            session.available_capacity_dose1 > 0
           ) {
-            setAvailability(session.available_capacity);
+            setAvailability(session.available_capacity_dose1);
             const center = {
               name: ct.name,
               pin: ct.pincode,
               date: session.date,
-              available: session.available_capacity
+              available: session.available_capacity_dose1
             };
             const addCenter = [...centerDetails];
             addCenter.push(center);
             setCenterDetails(addCenter);
             //bookSlot(ct.center_id,session.session_id)
-            console.log(`Center id: ${ct.center_id} Session id: ${session.session_id}`);
+            console.log(`Center id: ${ct.center_id} Session id: ${session.session_id}`,session);
             //alert("Hurry! Slots available", addCenter);
           }
           return session.min_age_limit === 18;
