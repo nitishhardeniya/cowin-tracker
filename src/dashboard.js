@@ -26,8 +26,28 @@ const bookSlot = (centerId, sessionId) => fetch("https://cdn-api.co-vin.in/api/v
   "credentials": "include"
 });
 
+const sendOTP = (mobileNo) => fetch("https://cdn-api.co-vin.in/api/v2/auth/public/generateOTP", {
+  "headers": {
+    "accept": "application/json",
+    "accept-language": "en-US,en;q=0.9",
+    "content-type": "application/json",
+    "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"90\", \"Google Chrome\";v=\"90\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "cross-site"
+  },
+  "referrer": "https://apisetu.gov.in/public/marketplace/api/cowin/cowin-public-v2",
+  "referrerPolicy": "no-referrer-when-downgrade",
+  "body": "{\"mobile\":\""+mobileNo+"\"}",
+  "method": "POST",
+  "mode": "cors",
+  "credentials": "omit"
+});
+
 const Dashboard = ({ districtId, title }) => {
   const [retryMsg, setRetryMessage] = useState('');
+  const [errorMsg, setErrorMessage] = useState('');
   const [centers, setCenters] = useState([]);
   const [available, setAvailability] = useState(0);
   const [centerDetails, setCenterDetails] = useState([]);
@@ -36,11 +56,14 @@ const Dashboard = ({ districtId, title }) => {
   //console.log(today)
   
   const callCowin = () => getCenters(districtId,today).then(data => {
+    if(data.error) {
+      setErrorMessage(data.error)
+    }
     setTimeout(() => setRetryMessage(''), 2000)
     setAvailability(0);
     setCenterDetails([]);
     const ct18p = [];
-    data && data.centers.forEach((ct) => {
+    data && data.centers && data.centers.forEach((ct) => {
       const isTargetCenter =
         ct.sessions?.length > 0 &&
         ct.sessions.filter((session) => {
@@ -58,6 +81,7 @@ const Dashboard = ({ districtId, title }) => {
             const addCenter = [...centerDetails];
             addCenter.push(center);
             setCenterDetails(addCenter);
+            //sendOTP(9663592916);
             //bookSlot(ct.center_id,session.session_id)
             console.log(`Center id: ${ct.center_id} Session id: ${session.session_id}`,session);
             //alert("Hurry! Slots available", addCenter);
@@ -70,6 +94,10 @@ const Dashboard = ({ districtId, title }) => {
     });
     //console.log(ct18p);
     setCenters(ct18p);
+  })
+  .catch(err => {
+    console.log(err);
+    setErrorMessage(err.error)
   });
 
 
@@ -77,6 +105,7 @@ const Dashboard = ({ districtId, title }) => {
     callCowin();
     setInterval(() => {
       //console.log("called")
+      setErrorMessage('');
       setRetryMessage('Checking for slots (20s)...');
       callCowin();
     }, 20000);
@@ -85,10 +114,11 @@ const Dashboard = ({ districtId, title }) => {
   return (
     <div>
       <div className="App">
-      <h2>{title}</h2>
+      <h4>{title}</h4>
       {retryMsg && <h3 className="blue">{retryMsg}</h3>}
-      {available > 0 && <div className="green">Available slots: {available}</div>}
-      <br />
+      {errorMsg && <h3 className="red">{errorMsg}</h3>}
+      {available > 0 && <div className="green available-block">Available slots: {available}</div>}
+      <br/>
       {centerDetails &&
         centerDetails.length > 0 &&
         centerDetails.map((elm) => (
@@ -114,7 +144,7 @@ const Dashboard = ({ districtId, title }) => {
             </div>
           </>
         ))}
-        <br /><br />
+        <br />
       {centers &&
         centers.length > 0 &&
         centers.map((el) => (

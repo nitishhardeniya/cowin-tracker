@@ -18,6 +18,14 @@
   justify-content: space-between;
 }
 
+.app-title {
+  font-size: 16px;
+  padding: 10px;
+  background-color: #eaeaea;
+  width: 100%;
+  text-align: center;
+}
+
 .name {
   color: grey;
   padding: 10px;
@@ -26,15 +34,29 @@
 }
 .pin {
   color: blue;
+  font-size: 12px;
 }
 
 .green {
-  color: green;
-  font-size: 24px;
+  color: darkgreen;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.available-block {
+  padding: 5px;
+  width: 100%;
+  background-color: lightcyan;
 }
 
 .blue {
   color: blue;
   padding: 10px;
   background-color: lightblue;
+}
+
+.red {
+  color: tomato;
+  padding: 10px;
+  background-color: lightpink;
 }
